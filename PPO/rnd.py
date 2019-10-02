@@ -14,7 +14,7 @@ K = tf.keras.backend
 
 
 def prediction_network_class(label, prediction):
-    x = tf.pow(label-prediction, 2)
+    x = tf.square(label-prediction)
     x = tf.reduce_sum(x, axis=1)
     return tf.reduce_mean(x), x
              
@@ -23,7 +23,7 @@ class RNDNetwork(tf.keras.Model):
 
     def __init__(self, output_size, freeze=False):
         super(RNDNetwork, self).__init__()
-        lr = 0.0001
+        lr = 0.001
         self.output_size = output_size
         self.freeze = freeze
 
@@ -37,10 +37,10 @@ class RNDNetwork(tf.keras.Model):
         # activation_fcn = tf.keras.layers.LeakyReLU
         activation_fcn = tf.keras.layers.ReLU
 
-        self.layer1 = DenseBlock(64, self.init, activation_fcn, freeze=True)
-        self.layer2 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
-        self.layer3 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
-        self.layer4 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
+        self.layer1 = DenseBlock(32, self.init, activation_fcn, freeze=True)
+        self.layer2 = DenseBlock(32, self.init, activation_fcn, freeze=self.freeze)
+        self.layer3 = DenseBlock(32, self.init, activation_fcn, freeze=self.freeze)
+        self.layer4 = DenseBlock(32, self.init, activation_fcn, freeze=self.freeze)
         self.layer5 = tf.keras.layers.Dense(self.output_size, activation="linear", trainable=not self.freeze)
 
     def call(self, x, return_logits=False, return_distribution=False):

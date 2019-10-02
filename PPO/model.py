@@ -156,7 +156,7 @@ class Model(tf.Module):
                 sum_max_ratio += self.ppo.max_ratio.numpy()
                 sum_entropy += self.ppo.entropy.numpy()
                 sum_approx_kl += self.ppo.approx_kl.numpy()
-                # sum_norm += self.ppo.global_grad_norm.numpy()
+                sum_norm += self.ppo.global_grad_norm.numpy()
 
 
                 count += 1

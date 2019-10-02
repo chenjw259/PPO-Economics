@@ -10,15 +10,15 @@ AGENTS = 1
 class EconomicsEnv(gym.Env):
 
     metadata = {'render.modes': ['human']}
+    max_price = 100
 
     def __init__(self, agents, env_agent):
         super(EconomicsEnv, self).__init__()
 
-        self.action_space = spaces.Discrete(10)
         self.observation_space = spaces.Box(low=0, high=100000, shape=(5, 2*len(agents)))
         self.agents = agents 
         self.alpha = 0.75
-        self.max_len = 2
+        self.max_len = 5
         self.observations = deque(maxlen=self.max_len) 
         self.agents.append(env_agent)
         self.agent = env_agent
@@ -26,14 +26,18 @@ class EconomicsEnv(gym.Env):
         self.steps = 0
         self.max_balance = 5 * self.agent.balance
         self.prev_sales = 0
+        self.range = 0.1
+        self.split = 0.1
+        self.action_array = list(np.arange(-self.range, self.range, self.split))
+        self.action_array.append(self.range)
+        self.action_space = spaces.Discrete(len(self.action_array))
 
     def demand(self):
-        max_price = 100
         demands = []
         agents = list(self.agents)
         key = list(range(len(agents)))
         for agent in agents:
-            demand = max_price - 0.5 * agent.price 
+            demand = EconomicsEnv.max_price - 0.5 * agent.price 
             demands.append(demand)
 
         key = [x for _,x in sorted(zip(demands,key))][::-1]
@@ -57,8 +61,13 @@ class EconomicsEnv(gym.Env):
         demands = self.demand()
         pre_balance = self.agent.balance
         total_sales = 0
-        choices = [-.5, -.4, -.3, -.1, 0, .1, .2, .3, .4, .5]
-        self.agent.generate_new_price(choices[action])
+        choices = self.action_array
+
+        for agent in self.agents:
+            if agent == self.agent:
+                self.agent.generate_new_price(choices[action])
+            else:
+                agent.generate_new_price()
         for agent in self.agents:
             agent.create_products()
 
@@ -84,14 +93,14 @@ class EconomicsEnv(gym.Env):
         if pre_balance < post_balance:
             reward = 1
         elif pre_balance == post_balance:
-            reward = -0.5
+            reward = -1
         else:
             reward = -1
         
         self.steps += 1
-        for agent in self.agents:
-            if agent.balance > self.max_balance:
-                agent.balance = self.max_balance
+        # for agent in self.agents:
+        #     if agent.balance > self.max_balance:
+        #         agent.balance = self.max_balance
         obs = self.next_observation()
 
         return obs, reward, self.steps >= self.n_steps, None
@@ -123,4 +132,4 @@ class EconomicsEnv(gym.Env):
         else:
             self.observations.append(self.generate_observation())
 
-        return list(np.hstack(self.observations))
+        return np.hstack(self.observations).astype(np.float32)

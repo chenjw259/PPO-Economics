@@ -1,4 +1,5 @@
 from . import BaseAgent
+from ..market import EconomicsEnv
 
 class EnvAgent(BaseAgent):
 
@@ -7,10 +8,10 @@ class EnvAgent(BaseAgent):
 
     def generate_new_price(self, change):
         self.price = self.price + (self.price * change)
-        if self.price <= 0.01:
-            self.price = 0.01
-        if self.price > 100: # TODO: Shared value from env
-            self.price = 100 
+        if self.price <= self.cost // 2:
+            self.price = self.cost // 2
+        if self.price > 2 * EconomicsEnv.max_price: # TODO: Shared value from env
+            self.price = 2 * EconomicsEnv.max_price 
 
     def reset(self):
         return EnvAgent(*self.backup)
