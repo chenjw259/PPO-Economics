@@ -1,6 +1,5 @@
 from economics import EconomicsEnv
-from economics.agents import ConstantAgent
-from economics.agents import EnvAgent
+from economics.agents import ConstantAgent, RandomAgent, EnvAgent
 import numpy as np
 import random
 from PPO import Model 
@@ -8,11 +7,11 @@ from memory import Memory
 from collections import deque
 
 
-agents = [ConstantAgent("tucker", 100, 10, 25)]
-env_agent = EnvAgent("env", 100, 10, 20)
+agents = [RandomAgent("tucker", 500, 10, 25)]
+env_agent = EnvAgent("env", 500, 10, 20)
 env = EconomicsEnv(agents, env_agent)
 
-m = Model(10, continuous=False)
+m = Model(len(env.action_array), continuous=False)
 memory = Memory()
 results = []
 game_rewards = []
@@ -37,6 +36,8 @@ for i in range(int(1e+6)):
         action, dist = m.get_action([obs])
 
         obs, reward, done, _ = env.step(action)
+        if x % 10 == 0:
+            print (dist.pi, str(env_agent.price)[:5])
 
         intrinsic_reward = intrinsic_reward / std
 
@@ -69,6 +70,10 @@ for i in range(int(1e+6)):
         del memory
         memory = Memory()
         game_rewards = []
+
+    if i == 0:
+        all_intrinsic = []
+        std = 1
 
 done = False
 while not done:
