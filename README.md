@@ -10,7 +10,8 @@
     * If balance after sales is less than original, but more than before sales: +0.5
     * If balance after sales is equal to the balance before sales: -0.5
     * If balance after sales is less than the balance before sales: -1
-* Demand is determined by a linear demand function (Qd = a - bP), where "a" is considered to maximum price (althought in true economics, a is the value of non price determinants), "b" is the coefficient of demand, where a b in the range of (0, 1) is elastic demand (large changes in price cause large changes in demand), and a b in the range of (1, inf) is inelastic demand (large changes in price cause minimal changes in demand).
+* Demand is determined by the inverse of a linear demand function (Qd = a - bP), where "a" is considered to maximum price (althought in true economics, a is the value of non price determinants), "b" is the coefficient of demand, where a b in the range of (0, 1) is elastic demand (large changes in price cause large changes in demand), and a b in the range of (1, inf) is inelastic demand (large changes in price cause minimal changes in demand).
+    * The inverse is -(1/b) * (p - a)
 
 ## TODO (No particular order)
 * Complete basic test with very simple model (Constant Agents, no overhead costs)
