@@ -16,3 +16,4 @@ class RandomAgent(BaseAgent):
         change = random.uniform(-self.range, self.range)
         self.price = self.price + (self.price * change)
         self.check_price()
+        

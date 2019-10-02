@@ -23,7 +23,7 @@ class BaseAgent():
         return BaseAgent(*self.backup)
 
     def create_products(self):
-        products_to_create = self.balance // self.cost // 2
+        products_to_create = self.balance // self.cost * 0.8
 
         self.available_products += products_to_create
         self.balance -= self.cost * products_to_create
@@ -36,8 +36,13 @@ class BaseAgent():
         raise NotImplementedError("generate_new_price not implemented in BaseAgent")
 
     def check_price(self):
+        self._check_min_price()
+        self._check_max_price()
+
+    def _check_min_price(self):
         if self.price <= self.cost // 2:
             self.price = self.cost // 2
+    
+    def _check_max_price(self):
         if self.price > 50 + EconomicsEnv.max_price: # TODO: Shared value from env
             self.price = 50 + EconomicsEnv.max_price 
-    

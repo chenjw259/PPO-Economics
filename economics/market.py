@@ -4,6 +4,7 @@ from gym import spaces
 from gym.envs.registration import register
 import random
 import numpy as np
+from .utility import Utility as util
 
 AGENTS = 1
 
@@ -17,6 +18,7 @@ class EconomicsEnv(gym.Env):
 
         self.observation_space = spaces.Box(low=0, high=100000, shape=(5, 2*len(agents)))
         self.agents = agents 
+        self.base_balance = env_agent.balance
         self.alpha = 0.75
         self.max_len = 5
         self.observations = deque(maxlen=self.max_len) 
@@ -40,8 +42,10 @@ class EconomicsEnv(gym.Env):
             demand = EconomicsEnv.max_price - 0.5 * agent.price 
             demands.append(demand)
 
-        key = [x for _,x in sorted(zip(demands,key))][::-1]
-        demands = sorted(demands)[::-1]
+        demands, key = util.sort_together(demands, key)
+
+        demands = demands[::-1]
+        key = key[::-1]
         out_demands = []
 
         for d in range(len(demands) - 1):
@@ -60,47 +64,19 @@ class EconomicsEnv(gym.Env):
     def step(self, action):
         demands = self.demand()
         pre_balance = self.agent.balance
-        total_sales = 0
-        choices = self.action_array
 
-        for agent in self.agents:
-            if agent == self.agent:
-                self.agent.generate_new_price(choices[action])
-            else:
-                agent.generate_new_price()
+        self._generate_new_prices(action)
         for agent in self.agents:
             agent.create_products()
 
-        sorted_by_price = sorted(self.agents)
-        sorted_demands = [x for _,x in sorted(zip(self.agents,demands))]
-        for agent, demand in zip(sorted_by_price, sorted_demands):
-            available_products = agent.available_products
-            amount_to_sell = 0
-            if available_products > 0:
-                if demand <= available_products:
-                    amount_to_sell = demand
-                else:
-                    amount_to_sell = available_products
-
-                if amount_to_sell > 0:
-                    agent.sell_products(amount_to_sell)
-                    total_sales += amount_to_sell
-
-            if agent == self.agent:
-                self.prev_sales = amount_to_sell
+        sorted_agents, sorted_demands = util.sort_together(self.agents, demands)
+        self._sell(sorted_agents, sorted_demands)
 
         post_balance = self.agent.balance
-        if pre_balance < post_balance:
-            reward = 1
-        elif pre_balance == post_balance:
-            reward = -0.5
-        else:
-            reward = -1
+        reward = self._calculate_reward(pre_balance, post_balance)
         
         self.steps += 1
-        # for agent in self.agents:
-        #     if agent.balance > self.max_balance:
-        #         agent.balance = self.max_balance
+
         obs = self.next_observation()
 
         return obs, reward, self.steps >= self.n_steps, None
@@ -140,3 +116,44 @@ class EconomicsEnv(gym.Env):
         observation = np.array(observation)
         observation = observation / EconomicsEnv.max_price
         return list(observation)
+
+    def _generate_new_prices(self, action):
+        choices = self.action_array
+        for agent in self.agents:
+            if agent == self.agent:
+                self.agent.generate_new_price(choices[action])
+            else:
+                agent.generate_new_price()
+
+    def _sell(self, sorted_agents, sorted_demands):
+        total_sales = 0
+        for agent, demand in zip(sorted_agents, sorted_demands):
+            available_products = agent.available_products
+            amount_to_sell = 0
+            if available_products > 0:
+                if demand <= available_products:
+                    amount_to_sell = demand
+                else:
+                    amount_to_sell = available_products
+
+                if amount_to_sell > 0:
+                    agent.sell_products(amount_to_sell)
+                    total_sales += amount_to_sell
+
+            if agent == self.agent:
+                self.prev_sales = amount_to_sell
+        
+        return total_sales
+
+    def _calculate_reward(self, pre_balance, post_balance):
+        if post_balance > pre_balance:
+            if post_balance > self.base_balance:
+                reward = 1
+            else:
+                reward = 0.5
+        elif post_balance == pre_balance:
+            reward = -0.5
+        else:
+            reward = -1
+
+        return reward
