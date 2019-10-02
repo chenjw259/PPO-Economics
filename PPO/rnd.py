@@ -61,7 +61,6 @@ class RNDNetwork(tf.keras.Model):
         return prediction_network_class(label, prediction)
       
     def fit_batch(self, x, label):
-        max_grad_norm = 1
         with tf.GradientTape() as tape:
             out = self(np.array(x).astype(np.float32))
 

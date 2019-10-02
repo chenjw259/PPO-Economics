@@ -132,8 +132,7 @@ class PPO(tf.Module):
 
         p_loss = tf.reduce_mean(tf.maximum(p1, p2))
 
-        entropy = 0
-        approx_kl = 0
+        approx_kl = .5 * tf.reduce_mean(tf.square(neglogpac - old_neglogpac))
 
         dist = Distribution(predictions)
         entropy = tf.reduce_mean(dist.entropy())
@@ -152,7 +151,7 @@ class PPO(tf.Module):
 
         self.p_loss = p_loss
         self.entropy = entropy
-        self.approx_kl = .5 * tf.reduce_mean(tf.square(neglogpac - old_neglogpac))
+        self.approx_kl = approx_kl
         self.avg_ratio = tf.reduce_mean(ratio)
         self.min_ratio = tf.reduce_min(ratio)
         self.max_ratio = tf.reduce_max(ratio)

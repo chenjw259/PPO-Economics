@@ -105,7 +105,7 @@ class EconomicsEnv(gym.Env):
 
     def next_observation(self):
         if len(self.observations) == 0:
-            for i in range(self.max_len):
+            for _ in range(self.max_len):
                 self.observations.append(self.generate_observation())
         else:
             self.observations.append(self.generate_observation())

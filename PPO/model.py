@@ -104,7 +104,7 @@ class Model(tf.Module):
         for e in range(epochs):
             
             a = [states, prev_logits, actions, rewards, returns, advantages, e_returns, i_returns]
-            states, prev_logits, actions, rewards, returns, advantages, e_returns, i_returns = shuffle(*a)
+            states, prev_logits, actions, rewards, returns, advantages, e_returns, i_returns = shuffle(*a) # pylint: disable=unbalanced-tuple-unpacking
 
             start = 0
             end = batch_size
@@ -124,8 +124,6 @@ class Model(tf.Module):
                 states_ = states[start:end]
                 prev_logits_ = prev_logits[start:end]
                 actions_ = actions[start:end]
-                rewards_ = rewards[start:end]
-                returns_ = returns[start:end]
                 advantages_ = advantages[start:end]
                 e_returns_ = e_returns[start:end]
                 i_returns_ = i_returns[start:end]
