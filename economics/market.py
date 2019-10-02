@@ -93,7 +93,7 @@ class EconomicsEnv(gym.Env):
         if pre_balance < post_balance:
             reward = 1
         elif pre_balance == post_balance:
-            reward = -1
+            reward = -0.5
         else:
             reward = -1
         
@@ -123,6 +123,8 @@ class EconomicsEnv(gym.Env):
             agent_obs = [agent.price]
             obs.extend(agent_obs)
 
+        obs = self.normalize_observation(obs)
+
         return obs
 
     def next_observation(self):
@@ -133,3 +135,8 @@ class EconomicsEnv(gym.Env):
             self.observations.append(self.generate_observation())
 
         return np.hstack(self.observations).astype(np.float32)
+
+    def normalize_observation(self, observation):
+        observation = np.array(observation)
+        observation = observation / EconomicsEnv.max_price
+        return list(observation)
