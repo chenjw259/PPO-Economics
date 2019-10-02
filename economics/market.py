@@ -41,9 +41,14 @@ class EconomicsEnv(gym.Env):
         key = list(range(len(agents)))
         for agent in agents:
             demand = -(1/0.5) * (agent.price - EconomicsEnv.max_price) 
+            
             demands.append(demand)
 
+
         demands, key = util.sort_together(demands, key)
+        for i in range(len(demands)):
+            if demands[i] <= 0:
+                demands[i] = 0
 
         demands = demands[::-1]
         key = key[::-1]
@@ -53,20 +58,21 @@ class EconomicsEnv(gym.Env):
             out_demands.append(int(demands[d] - demands[d + 1]))
         out_demands.append(int(demands[-1]))
 
-
         demands = [None] * len(demands)
         for d, i in zip(out_demands, key):
             demands[i] = d 
+
         
         return demands
 
         
 
     def step(self, action):
-        demands = self.demand()
+        
         pre_balance = self.agent.balance
 
         self._generate_new_prices(action)
+        demands = self.demand()
         for agent in self.agents:
             agent.create_products()
 
@@ -158,7 +164,7 @@ class EconomicsEnv(gym.Env):
             available_products = agent.available_products
             if agent.price > EconomicsEnv.max_price:
                 assert demand == 0
-                
+
             amount_to_sell = 0
             if available_products > 0:
                 if demand <= available_products:
