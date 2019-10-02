@@ -1,5 +1,5 @@
 ## PPO Economics (WIP)
- Can the Proximal Policy Optimization created by OpenAI, in conjunction with Random Network Distillation (also created by OpenAI) be used to solve an Economics based enviroment with a linear demand curve?
+ Can the Proximal Policy Optimization created by OpenAI (Shulman et al.), in conjunction with Random Network Distillation (also created by OpenAI (Burda et al.)) be used to solve an Economics based enviroment with a linear demand curve?
  
 ## Properties of Environment (WIP)
 * Objective: Maximize Profit
