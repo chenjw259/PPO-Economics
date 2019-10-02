@@ -5,12 +5,13 @@ from gym.envs.registration import register
 import random
 import numpy as np
 from .utility import Utility as util
+import matplotlib.pyplot as plt
 
 AGENTS = 1
 
 class EconomicsEnv(gym.Env):
 
-    metadata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human', 'rgb_array']}
     max_price = 100
 
     def __init__(self, agents, env_agent):
@@ -39,7 +40,7 @@ class EconomicsEnv(gym.Env):
         agents = list(self.agents)
         key = list(range(len(agents)))
         for agent in agents:
-            demand = EconomicsEnv.max_price - 0.5 * agent.price 
+            demand = -(1/0.5) * (agent.price - EconomicsEnv.max_price) 
             demands.append(demand)
 
         demands, key = util.sort_together(demands, key)
@@ -90,8 +91,34 @@ class EconomicsEnv(gym.Env):
 
         return self.next_observation()
 
-    def render(self, mode="human", close=False):
-        raise NotImplementedError
+    def render(self, mode="human", title="", close=False):
+        fig, axis = plt.subplots(nrows=len(self.agents), ncols=1, figsize=(16, 6))
+        fig.suptitle(title, fontsize=16)
+        labels = ["price", "balance"]
+        prices = [agent.prices for agent in self.agents]
+        balances = [agent.balances for agent in self.agents]
+        names = [agent.name for agent in self.agents]
+        c = 0
+
+        for ax in axis:
+            to_use = [prices, balances][c]
+            for agent, data in zip(self.agents, to_use):
+                name = agent.name
+                ax.plot(list(range(len(data))), data, label=name)
+                ax.set_ylabel(labels[c])
+                ax.set_xlabel('day')
+                ax.legend(loc='upper left')
+
+            c += 1
+
+        fig.canvas.draw()
+
+        data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        plt.close()
+        del fig
+
+        return data
 
     def generate_observation(self):
         obs = [self.prev_sales]
@@ -129,6 +156,9 @@ class EconomicsEnv(gym.Env):
         total_sales = 0
         for agent, demand in zip(sorted_agents, sorted_demands):
             available_products = agent.available_products
+            if agent.price > EconomicsEnv.max_price:
+                assert demand == 0
+                
             amount_to_sell = 0
             if available_products > 0:
                 if demand <= available_products:

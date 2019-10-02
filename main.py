@@ -5,7 +5,18 @@ import random
 from PPO import Model 
 from memory import Memory
 from collections import deque
+from gym.wrappers.monitoring.video_recorder import VideoRecorder
+from pyvirtualdisplay import Display
+import glob
+import os
+from PIL import Image
 
+files = glob.glob('videos/*')
+for f in files:
+    os.remove(f)
+
+virtual_display = Display(visible=0, size=(1400, 900))
+virtual_display.start()
 
 agents = [SwappingAgent("tucker", 500, 10, 25)]
 env_agent = EnvAgent("env", 500, 10, 20)
@@ -19,7 +30,8 @@ games = 0
 all_intrinsic = []
 last_100 = deque(maxlen=100)
 std = 1
-
+epoch = 1
+episode = 1
 for i in range(int(1e+6)):
     rewards = []
     episode_i_rewards = []
@@ -27,6 +39,10 @@ for i in range(int(1e+6)):
     obs = env.reset()
     done = False
     x = 0
+    
+    # env.render()
+    # recorder.ansi_mode = False
+
     while not done:
         # gym_env.render()
         obs = np.array(obs)
@@ -46,6 +62,10 @@ for i in range(int(1e+6)):
         episode_i_rewards.append(intrinsic_reward)
         x += 1
 
+    img = env.render(title="Epoch #%s | Episode #%s | Iterataion #%s" % (epoch, episode, i))
+    im = Image.fromarray(img)
+    im.save("videos/%s.jpeg" % i)
+    episode += 1
     
     all_intrinsic.extend(episode_i_rewards)
 
@@ -70,6 +90,8 @@ for i in range(int(1e+6)):
         del memory
         memory = Memory()
         game_rewards = []
+        epoch += 1
+        episode = 1
 
     if i == 0:
         all_intrinsic = []

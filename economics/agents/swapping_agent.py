@@ -2,7 +2,7 @@ from .base_agent import BaseAgent
 import random
 class SwappingAgent(BaseAgent):
 
-    def __init__(self, name, balance, cost, price, change=.35, steps=10):
+    def __init__(self, name, balance, cost, price, change=.15, steps=10):
 
         super().__init__(name, balance, cost, price)
         self.swap_backup = [change, steps]

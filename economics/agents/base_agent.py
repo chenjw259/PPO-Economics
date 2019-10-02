@@ -9,6 +9,8 @@ class BaseAgent():
         self.price = price 
         self.available_products = 0
         self.backup = [name, balance, cost, price]
+        self.prices = [self.price]
+        self.balances = [self.balance]
 
     def __gt__(self, other):
         return self.price > other.price 
@@ -31,6 +33,7 @@ class BaseAgent():
     def sell_products(self, count):
         self.available_products -= count 
         self.balance += count * self.price
+        self.balances.append(self.balance)
 
     def generate_new_price(self):
         raise NotImplementedError("generate_new_price not implemented in BaseAgent")
@@ -38,6 +41,7 @@ class BaseAgent():
     def check_price(self):
         self._check_min_price()
         self._check_max_price()
+        self.prices.append(self.price)
 
     def _check_min_price(self):
         if self.price <= self.cost // 2:
