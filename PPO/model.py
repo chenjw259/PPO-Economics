@@ -58,7 +58,7 @@ class Model(tf.Module):
     def __init__(self, output_size, continuous=False, sample_mode="random"):
 
         self.sample_mode = sample_mode
-        self.rnd = RND(64)
+        self.rnd = RND(32)
 
         self.ppo = PPO(output_size)
         self.beta = 1e-2

@@ -29,13 +29,13 @@ class RNDNetwork(tf.keras.Model):
 
         self.init = tf.keras.initializers.glorot_normal
         self._create_model()
-        self.opt = tf.keras.optimizers.SGD(lr=lr)
+        self.opt = tf.keras.optimizers.Adam(lr=lr)
 
 
     def _create_model(self):
 
-        activation_fcn = tf.keras.layers.LeakyReLU
-        # activation_fcn = tf.keras.layers.ReLU
+        # activation_fcn = tf.keras.layers.LeakyReLU
+        activation_fcn = tf.keras.layers.ReLU
 
         self.layer1 = DenseBlock(64, self.init, activation_fcn, freeze=True)
         self.layer2 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
