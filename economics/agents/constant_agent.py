@@ -8,6 +8,4 @@ class ConstantAgent(BaseAgent):
     def generate_new_price(self):
         return self.price 
 
-    def reset(self):
-        return ConstantAgent(*self.backup)
     

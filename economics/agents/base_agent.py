@@ -20,7 +20,7 @@ class BaseAgent():
         return self.price == other.price
 
     def reset(self):
-        return BaseAgent(*self.backup)
+        return self.__init__(*self.backup)
 
     def create_products(self):
         products_to_create = self.balance // self.cost * 0.8

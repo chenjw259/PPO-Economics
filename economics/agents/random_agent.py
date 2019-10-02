@@ -9,9 +9,6 @@ class RandomAgent(BaseAgent):
         self.range = 0.1
         super().__init__(name, balance, cost, price)
 
-    def reset(self):
-        return RandomAgent(*self.backup)
-
     def generate_new_price(self):
         change = random.uniform(-self.range, self.range)
         self.price = self.price + (self.price * change)

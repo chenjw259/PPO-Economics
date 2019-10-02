@@ -10,9 +10,6 @@ class EnvAgent(BaseAgent):
         self.price = self.price + (self.price * change)
         self.check_price()
 
-    def reset(self):
-        return EnvAgent(*self.backup)
-
     def _check_min_price(self):
         if self.price <= 0.01:
             self.price = 0.01
