@@ -27,14 +27,6 @@ class EconomicsEnv(gym.Env):
         self.max_balance = 5 * self.agent.balance
         self.prev_sales = 0
 
-    @property
-    def available_sales(self):
-        sum_sales = 0
-        for agent in self.agents:
-            a_sum = agent.balance // agent.cost + agent.available_products
-            sum_sales += a_sum
-        return int(sum_sales * self.alpha)
-
     def demand(self):
         max_price = 100
         demands = []
@@ -73,14 +65,14 @@ class EconomicsEnv(gym.Env):
         sorted_by_price = sorted(self.agents)
         sorted_demands = [x for _,x in sorted(zip(self.agents,demands))]
         for agent, demand in zip(sorted_by_price, sorted_demands):
-            possible_sales = agent.available_products
-            available_sales = demand
+            available_products = agent.available_products
             amount_to_sell = 0
-            if available_sales > 0:
-                if possible_sales <= available_sales:
-                    amount_to_sell = possible_sales
+            if available_products > 0:
+                if demand <= available_products:
+                    amount_to_sell = demand
                 else:
-                    amount_to_sell = possible_sales - available_sales
+                    amount_to_sell = available_products
+
                 if amount_to_sell > 0:
                     agent.sell_products(amount_to_sell)
                     total_sales += amount_to_sell

@@ -23,7 +23,7 @@ class BaseAgent():
         return BaseAgent(*self.backup)
 
     def create_products(self):
-        products_to_create = self.balance // self.cost - 1
+        products_to_create = self.balance // self.cost
         self.available_products += products_to_create
         self.balance -= self.cost * products_to_create
 
