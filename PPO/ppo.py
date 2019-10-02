@@ -1,3 +1,6 @@
+# Based on Proximal Policy Optimization from OpenAI
+# Paper: Proximal Policy Optimization Algorithms (Schulman et al.) https://arxiv.org/abs/1707.06347
+
 import tensorflow as tf
 import numpy as np
 from .shared import DenseBlock, DenseBatchNormBlock
@@ -13,7 +16,6 @@ class PPO(tf.Module):
         self._create_model()
         self.clip_val = 0.2
         self.beta = 1e-2
-        # self.opt = tf.keras.optimizers.Adam(lr=2.5e-4)
         self.opt = tf.keras.optimizers.Adam(lr=1e-4)
         self.grad_clip = 1
 
@@ -23,6 +25,7 @@ class PPO(tf.Module):
         Block = DenseBlock
         reg = None
 
+        # shared layers
         self.layer1 = Block(128, self.init, activation_fcn, regularization=reg, name="shared_block_1")
         self.layer2 = Block(128, self.init, activation_fcn, regularization=reg, name="shared_block_2")
         self.layer3 = Block(128, self.init, activation_fcn, regularization=reg, name="shared_block_3")
@@ -93,13 +96,11 @@ class PPO(tf.Module):
         rewards = labels[0]
         returns = labels[1]
         cliprange = 0.2
-        # x = tf.keras.losses.MSE(labels, predictions)
 
         clipped = rewards + tf.clip_by_value(predictions - rewards, -cliprange, cliprange)
         loss1 = tf.square(predictions - returns)
         loss2 = tf.square(clipped - returns)
         x = 0.5 * tf.reduce_mean(tf.maximum(loss1, loss2))
-
 
         if tf.math.is_nan(x):
             for v in self.trainable_variables:
@@ -136,7 +137,6 @@ class PPO(tf.Module):
 
         dist = Distribution(predictions)
         entropy = tf.reduce_mean(dist.entropy())
-        # print (dist.entropy())
 
         loss = p_loss - self.beta * entropy 
 
@@ -177,9 +177,6 @@ class PPO(tf.Module):
         grads = tape.gradient(loss, self.trainable_variables)
         
         grads, norm = tf.clip_by_global_norm(grads, 0.5) 
-
-        # grads = [tf.clip_by_value(grad, -100., 100.) for grad in grads]
-        # _, norm = tf.clip_by_global_norm(grads, 0.5) 
         
         self.global_grad_norm = norm  
 

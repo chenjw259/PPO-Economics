@@ -1,3 +1,5 @@
+# Random network distillation from OpenAI
+# Paper: Exploration by Random Network Distillation (Burda et al.) https://arxiv.org/abs/1810.12894
 
 import tensorflow as tf 
 import numpy as np
@@ -24,26 +26,22 @@ class RNDNetwork(tf.keras.Model):
         lr = 0.0001
         self.output_size = output_size
         self.freeze = freeze
-        # if RND.static_instances == 0:
-        #     self.init = tf.keras.initializers.RandomNormal
-        # else:    
+
         self.init = tf.keras.initializers.glorot_normal
         self._create_model()
-        self.opt = tf.keras.optimizers.SGD(lr=0.0001)
+        self.opt = tf.keras.optimizers.SGD(lr=lr)
 
 
     def _create_model(self):
 
-        # activation_fcn = tf.keras.layers.LeakyReLU
-        activation_fcn = tf.keras.layers.ReLU
+        activation_fcn = tf.keras.layers.LeakyReLU
+        # activation_fcn = tf.keras.layers.ReLU
 
         self.layer1 = DenseBlock(64, self.init, activation_fcn, freeze=True)
         self.layer2 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
         self.layer3 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
         self.layer4 = DenseBlock(64, self.init, activation_fcn, freeze=self.freeze)
-
         self.layer5 = tf.keras.layers.Dense(self.output_size, activation="linear", trainable=not self.freeze)
-        # self.out = tf.keras.layers.Activation("relu")
 
     def call(self, x, return_logits=False, return_distribution=False):
         x = self.layer1(x)
