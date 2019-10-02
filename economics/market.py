@@ -22,7 +22,7 @@ class EconomicsEnv(gym.Env):
         self.observations = deque(maxlen=self.max_len) 
         self.agents.append(env_agent)
         self.agent = env_agent
-        self.n_steps = 128
+        self.n_steps = 256
         self.steps = 0
         self.max_balance = 5 * self.agent.balance
         self.prev_sales = 0
