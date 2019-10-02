@@ -36,8 +36,8 @@ for i in range(int(1e+6)):
         action, dist = m.get_action([obs])
 
         obs, reward, done, _ = env.step(action)
-        if x % 10 == 0:
-            print (dist.pi, str(env_agent.price)[:5])
+        # if x % 10 == 0:
+        #     print (dist.pi, str(env_agent.price)[:5])
 
         intrinsic_reward = intrinsic_reward / std
 
