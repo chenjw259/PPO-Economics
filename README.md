@@ -13,3 +13,4 @@
 * Implement overhead costs
 * Allow for changing of cost, at a fee
 * Flesh out all classes and subclasses (different types of agents, different policies, etc)
+* Rotating demand (not all consumers buy each days)

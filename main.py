@@ -31,7 +31,7 @@ for i in range(int(1e+6)):
     while not done:
         # gym_env.render()
         obs = np.array(obs)
-        # print (obs)
+        
         intrinsic_reward = m.get_intrinsic_reward([obs])
 
         action, dist = m.get_action([obs])
