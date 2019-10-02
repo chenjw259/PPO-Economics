@@ -41,7 +41,7 @@ class BaseAgent():
 
     def _check_min_price(self):
         if self.price <= self.cost // 2:
-            self.price = self.cost // 2
+            self.price = self.cost + 1
     
     def _check_max_price(self):
         if self.price > 50 + EconomicsEnv.max_price: # TODO: Shared value from env

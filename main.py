@@ -1,5 +1,5 @@
 from economics import EconomicsEnv
-from economics.agents import ConstantAgent, RandomAgent, EnvAgent
+from economics.agents import ConstantAgent, RandomAgent, EnvAgent, SwappingAgent
 import numpy as np
 import random
 from PPO import Model 
@@ -7,7 +7,7 @@ from memory import Memory
 from collections import deque
 
 
-agents = [RandomAgent("tucker", 500, 10, 25)]
+agents = [SwappingAgent("tucker", 500, 10, 25)]
 env_agent = EnvAgent("env", 500, 10, 20)
 env = EconomicsEnv(agents, env_agent)
 
