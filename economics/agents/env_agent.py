@@ -8,10 +8,7 @@ class EnvAgent(BaseAgent):
 
     def generate_new_price(self, change):
         self.price = self.price + (self.price * change)
-        if self.price <= self.cost // 2:
-            self.price = self.cost // 2
-        if self.price > 2 * EconomicsEnv.max_price: # TODO: Shared value from env
-            self.price = 2 * EconomicsEnv.max_price 
+        self.check_price()
 
     def reset(self):
         return EnvAgent(*self.backup)

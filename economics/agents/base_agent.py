@@ -1,5 +1,5 @@
 import random
-
+from ..market import EconomicsEnv
 class BaseAgent():
 
     def __init__(self, name, balance, cost, price):
@@ -35,4 +35,9 @@ class BaseAgent():
     def generate_new_price(self):
         raise NotImplementedError("generate_new_price not implemented in BaseAgent")
 
+    def check_price(self):
+        if self.price <= self.cost // 2:
+            self.price = self.cost // 2
+        if self.price > 50 + EconomicsEnv.max_price: # TODO: Shared value from env
+            self.price = 50 + EconomicsEnv.max_price 
     
