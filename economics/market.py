@@ -75,6 +75,7 @@ class EconomicsEnv(gym.Env):
         for agent, demand in zip(sorted_by_price, sorted_demands):
             possible_sales = agent.available_products
             available_sales = demand
+            amount_to_sell = 0
             if available_sales > 0:
                 if possible_sales <= available_sales:
                     amount_to_sell = possible_sales
@@ -83,7 +84,7 @@ class EconomicsEnv(gym.Env):
                 if amount_to_sell > 0:
                     agent.sell_products(amount_to_sell)
                     total_sales += amount_to_sell
-                    
+
             if agent == self.agent:
                 self.prev_sales = amount_to_sell
 
