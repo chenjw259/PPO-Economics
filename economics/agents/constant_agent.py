@@ -6,6 +6,7 @@ class ConstantAgent(BaseAgent):
         super().__init__(name, balance, cost, price)
 
     def generate_new_price(self):
+        self.check_price()
         return self.price 
 
     

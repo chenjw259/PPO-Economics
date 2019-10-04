@@ -18,8 +18,8 @@ for f in files:
 virtual_display = Display(visible=0, size=(1400, 900))
 virtual_display.start()
 
-agents = [SwappingAgent("tucker", 500, 10, 25)]
-env_agent = EnvAgent("env", 500, 10, 20)
+agents = [ConstantAgent("a", 500, 10, 25), SwappingAgent("b", 500, 10, 20)]
+env_agent = EnvAgent("env", 500, 10, 23)
 env = EconomicsEnv(agents, env_agent)
 
 m = Model(len(env.action_array), continuous=False)
@@ -53,7 +53,7 @@ for i in range(int(1e+6)):
 
         obs, reward, done, _ = env.step(action)
         # if x % 10 == 0:
-        #     print (dist.pi, str(env_agent.price)[:5])
+        #     print (dist.pi, str(env_agent.price)[:5], str(env_agent.balance)[:5])
 
         intrinsic_reward = intrinsic_reward / std
 
@@ -61,7 +61,7 @@ for i in range(int(1e+6)):
         rewards.append(reward)
         episode_i_rewards.append(intrinsic_reward)
         x += 1
-
+    
     img = env.render(title="Epoch #%s | Episode #%s | Iterataion #%s" % (epoch, episode, i))
     im = Image.fromarray(img)
     im.save("videos/%s.jpeg" % i)

@@ -16,7 +16,8 @@ class PPO(tf.Module):
         self._create_model()
         self.clip_val = 0.2
         self.beta = 1e-2
-        self.opt = tf.keras.optimizers.Adam(lr=1e-4)
+        self.opt = tf.keras.optimizers.Adam(lr=2.5e-4)
+        # self.opt = tf.keras.optimizers.Adam(lr=1e-4)
         self.grad_clip = 1
 
     def _create_model(self):

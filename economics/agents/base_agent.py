@@ -8,6 +8,8 @@ class BaseAgent():
         self.cost = cost 
         self.price = price 
         self.available_products = 0
+        self.quarterly_cost = 0
+        self.revenue = 0
         self.backup = [name, balance, cost, price]
         self.prices = [self.price]
         self.balances = [self.balance]
@@ -28,12 +30,15 @@ class BaseAgent():
         products_to_create = self.balance // self.cost * 0.8
 
         self.available_products += products_to_create
-        self.balance -= self.cost * products_to_create
+        self.quarterly_cost = self.cost * products_to_create
 
     def sell_products(self, count):
         self.available_products -= count 
-        self.balance += count * self.price
+        profit = count * self.price - self.quarterly_cost
+        self.balance += profit
         self.balances.append(self.balance)
+
+        return profit
 
     def generate_new_price(self):
         raise NotImplementedError("generate_new_price not implemented in BaseAgent")
